@@ -44,12 +44,11 @@ def encrypt(message, e, n):
     print(cipher)
     return cipher
 
-
 def decrypt(cipher, d, n):
     private_part1, private_part2 = d, n
     plaintext = [chr((char ** private_part1) % private_part2) for char in cipher]
-    print(plaintext)
     return ''.join(plaintext)
+
 key1 = generateKey()
 print("First key generated")
 key2 = generateKey()
@@ -58,7 +57,6 @@ msg = input("Entra com a string:\n")
 ascii_encoding = [ord(char) for char in msg]
 print("Mensagem encriptada: ")
 cifra1 = encrypt(msg, key1[3], key1[2])
-# print(''.join(map(str,cifra1)))
-# print(cifra1)
-decrypted_msg = decrypt(cifra1, int(key1[5]), int(key1[2]))
+print(''.join(map(str,cifra1)))
+decrypted_msg = decrypt(cifra1, key1[5], key1[2])
 print("Mensagem desencriptada: ", decrypted_msg)
