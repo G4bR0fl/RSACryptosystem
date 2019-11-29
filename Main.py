@@ -1,9 +1,9 @@
 import sympy
 import numpy
-import random
 
 
 def xgcd(a, b):
+    """return (g, x, y) such that a*x + b*y = g = gcd(a, b)"""
     x0, x1, y0, y1 = 0, 1, 1, 0
     while a != 0:
         q, b, a = b // a, a, b % a
@@ -21,13 +21,11 @@ def mulinv(a, b):
 
 def generateKey():
 
-    p = sympy.randprime(10**2, 10**3)   
-    print("Prime 'p':", p)
+    p = sympy.randprime(10**2, 10**3)
     q = p
 
     while p == q:
         q = sympy.randprime(10**2, 100**3)
-        print("Prime 'q':", q)
 
     n = p*q
     e = 65537
@@ -55,6 +53,8 @@ key2 = generateKey()
 msg = input("Entra com a string:\n")
 ascii_encoding = [ord(char) for char in msg]
 print("Mensagem encriptada: ")
-print(''.join(map(str,ascii_encoding)))
 cifra1 = encrypt(msg, key1[3], key1[2])
+# print(''.join(map(str,cifra1)))
+# print(cifra1)
 decrypted_msg = decrypt(cifra1, int(key1[5]), int(key1[2]))
+print("Mensagem desencriptada: ", decrypted_msg)
