@@ -1,7 +1,6 @@
 import sympy
 import numpy
-import random
-import time
+
 
 def xgcd(a, b):
     """return (g, x, y) such that a*x + b*y = g = gcd(a, b)"""
@@ -14,52 +13,41 @@ def xgcd(a, b):
 
 
 def mulinv(a, b):
-    _, x, _ = xgcd(a, b)
-    return (x + 100*b)% b # garante que nao vai ser negativo pq o operador % nao trata mod direito
+    """return x such that (x * a) % b == 1"""
+    g, x, _ = xgcd(a, b)
+    if g == 1:
+        return x % b
 
 
 def generateKey():
 
-    p = sympy.randprime(10**0, 10**3) 
+    p = sympy.randprime(10**2, 10**3)
     q = p
 
     while p == q:
-        q = sympy.randprime(10**0, 10**3)
+        q = sympy.randprime(10**2, 100**3)
+
     n = p*q
-    phi_n = (p-1)*(q-1)
-    # print("p =", p, "q =", q, "n =", n, "phi_n =", phi_n)
-    e = random.randrange(1, phi_n)
-    g, _, _ = xgcd(e, phi_n)
-    while g != 1:
-        e = random.randrange(1, phi_n)
-        g, _, _ = xgcd(e, phi_n)
-    d = mulinv(e, phi_n)
-    # print("p =", p, "q =", q, "n =", n, "phi_n =", phi_n, "e =", e, "d =", d)
-    
-    return (p, q, n, e, phi_n, d)
+    e = 65537
+    lambda_n = numpy.lcm(p - 1, q - 1)
+    d = mulinv(e, lambda_n)
+
+    return (p, q, n, e, lambda_n, d)
 
 
 def encrypt(message, e, n):
-    public_part1, public_part2 = e, n 
-    cipher = [(ord(char) ** public_part1) % public_part2 for char in message]
-    return cipher
+    return (message ** e) % n
+
 
 def decrypt(cipher, d, n):
-    private_part1, private_part2 = d, n
-    plaintext = [chr((char ** private_part1) % private_part2) for char in cipher]
-    return ''.join(plaintext)
-print("Gerenating first key...")
-time.sleep(0.5)
+    return (cipher ** d) % n
+
+
 key1 = generateKey()
-print("First key generated")
-print("Gerenating second key...")
-time.sleep(0.5)
 key2 = generateKey()
-print("Second key generated")
-msg = input("Insira um texto para ser encriptado:\n")
-ascii_encoding = [ord(char) for char in msg]
-print("Mensagem encriptada:")
-cifra1 = encrypt(msg, key1[3], key1[2])
-print(''.join(map(str,cifra1)))
-decrypted_msg = decrypt(cifra1, key1[5], key1[2])
-print("Mensagem desencriptada:", decrypted_msg)
+
+print(key1)
+cifra1 = encrypt(166, key1[3], key1[2])
+print(cifra1)
+mensagem = decrypt(int(cifra1), int(key1[5]), int(key1[2]))
+print(mensagem)
