@@ -7,6 +7,14 @@ from RSA import RSA
 class Client:
 
     def __init__(self, server, port):
+
+
+class Client:
+
+    def __init__(self):
+        server = '127.0.0.1'
+        port = 3000
+
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.settimeout(30)
         try:
@@ -14,6 +22,7 @@ class Client:
 
         except ConnectionRefusedError:
             print('Connection refused')
+
 
     def fileMessage(self, fileName):
         file = open(fileName, 'r')
@@ -107,6 +116,25 @@ class Client:
         #
         #     else:
         #         print('Message too long, write a message smaller than 20 characters')
+        
+    def sendMessage(self):
+        result = []
+        while True:
+            print('Write your message: ', end='')
+            msg = input()
+            if len(msg) < 20:
+                self.s.send(msg.encode())
+                result.append(self.s.recv(1))
+                while True:
+                    try:
+                        print(result)
+                        result.append(self.s.recv(1))
+                    except socket.timeout:
+                        break
+
+            else:
+                print('Message too long, write a message smaller than 20 characters')
+
 
     def requestKey(self):
         msg = 'generate-key'
@@ -222,3 +250,18 @@ if sys.argv[1] == '--user-key' and len(sys.argv) == 3:
 # arg1 = --user-connect, arg2 == ip, arg3 == port
 if sys.argv[1] == '--user-connect' and len(sys.argv) == 4:
     client = Client('127.0.0.1', 30000)
+
+        file.write('Public-key: ' + publicKey + '\n')
+        encPrivateKey = self.s.recv(64).decode('utf-8')
+        print('Encrypted Private-key: ' + encPrivateKey)
+        privateKey = diffieHellman.decrypt(encPrivateKey)
+        print('Decrypted Private-key: ' + privateKey)
+        file.write('Private-key: ' + privateKey + '\n')
+        file.close()
+        self.s.close()
+
+
+if sys.argv[1] == '--generate-key' and len(sys.argv) == 3:
+    client = Client()
+    client.diffieHellman(sys.argv[2])
+    print('Key generated successfully')

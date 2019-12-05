@@ -7,7 +7,9 @@ class Server:
 
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self.s.bind(('127.0.0.1', 30000))
+
         self.s.listen(1)
         print('Alohomora')
         connections = []
@@ -18,6 +20,7 @@ class Server:
             print(address)
             while True:
                 data = self.connection.recv(1024)
+
                 # print(data)
                 if data.decode(encoding='utf-8') == 'generate-key':
                     self.diffieHellman()
@@ -71,6 +74,11 @@ class Server:
                 #     input()
 
 
+                print(data)
+                if data.decode(encoding='utf-8') == 'generate-key':
+                    self.diffieHellman()
+                    self.connection.close()
+                    break
 
     def generateKey(self, diffieHellman):
 
@@ -96,6 +104,17 @@ class Server:
 
             file = open('server_key.txt', 'a')
             file.write(decName + ' ' + publicKey + '\n')
+
+            # TODO: gera chave publica e privada rsa aqui
+            # TODO: por enquanto sao place holders
+
+            publicKey = 'a1b2c3d4'
+            print('Public-key: ' + publicKey)
+            privateKey = 'e5f6g7h8'
+            print('Private-key: ' + privateKey)
+
+            file = open('server_key.txt', 'a')
+            file.write(decName + ' ' + publicKey + ' ' + privateKey + '\n')
             file.close()
 
             publicKey = diffieHellman.encrypt(publicKey)
@@ -141,7 +160,6 @@ class Server:
 
         self.generateKey(diffieHellman)
 
-
     def checkUser(self, name):
         file = open('server_key.txt', 'r')
 
@@ -154,6 +172,7 @@ class Server:
         return True
 
 
+
     def findUser(self, name):
         file = open('server_key.txt', 'r')
 
@@ -164,6 +183,5 @@ class Server:
                 return name_entry[1]
         file.close()
         return 'User not found'
-
 
 server = Server()
