@@ -34,38 +34,63 @@ class Client:
         rsa = RSA()
         return rsa.encrypt(hexHash + text, int(privateKey[1]), int(privateKey[0]))
 
-    def encodeList(self, encMessage):
-        byteArr = []
-        for i in encMessage:
-            byteArr.append((i).to_bytes(4, byteorder='big'))
+    # def encodeList(self, encMessage):
+    #     byteArr = []
+    #     for i in encMessage:
+    #         byteArr.append((i).to_bytes(4, byteorder='big'))
 
-        self.byteArr = byteArr
+    #     self.byteArr = byteArr
 
-    def conCat(self, nameB):
-        byteStr = b''
-        for i in self.byteArr:
-            byteStr += i
-        byteStr = nameB + byteStr
-        print(byteStr)
-        self.byteStr = byteStr
+    # def conCat(self, nameB):
+    #     byteStr = b''
+    #     for i in self.byteArr:
+    #         byteStr += i
+    #     byteStr = nameB + byteStr
+    #     print(byteStr)
+    #     self.byteStr = byteStr
+
+    def listToStr(self, encMsg):
+        max_length = 1
+        arr = []
+        for i in encMsg:
+            if(len(str(i)) > max_length):
+                max_length = len(str(i))
+        for j in encMsg:
+            if(len(str(j)) < max_length):
+                arr.append(format(j, '0' + str(max_length)))
+            elif(len(str(j)) >= max_length):
+                arr.append(format(j, '0' + str(max_length)))
+        # print('_'.join(map(str,arr)))
+        undescoredString = '_'.join(map(str,arr))
+        # print(undescoredString)
+        # exit()
+        return undescoredString.encode()
+
 
     def sendMessage(self, fileName, name):
         self.s.send('message'.encode())
         self.s.recv(1024)
         text = self.fileMessage(fileName)
         hexHash = self.hashMessage(text)
-        print(hexHash)
+        print("Hash gerada:", hexHash)
         encMessage = self.encryptMessage(text, hexHash)
-        self.encodeList(encMessage)
-        print(len(self.byteArr))
-        nameB = (name + '_').encode()
-        self.conCat(nameB)
+        print("Mensagem Encriptada dentro :", ''.join(str(encMessage)))
+        print("------------------------------")
+        encodedUnderscoredString = self.listToStr(encMessage)
+        # print("Mensagem encodada:", encodedUnderscoredString)
+        self.s.send(encodedUnderscoredString)
+        # exit()
+        # self.encodeList(encMessage)
+        # print(len(self.byteArr))
+        # nameB = (name + '_').encode()
+        # print("Variável do nome encoded:", nameB)
+        # exit()
+        # self.conCat(nameB)
+        # print("dps de concat", nameB)
         # encMessage = bytes(encMessage)
-
+        # exit()
         # print(encMessage)
         # msg = name + '_' + encMessage
-        self.s.send(self.byteStr)
-        exit()
 
         # result = []
         # while True:

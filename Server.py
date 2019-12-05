@@ -18,7 +18,7 @@ class Server:
             print(address)
             while True:
                 data = self.connection.recv(1024)
-                print(data)
+                # print(data)
                 if data.decode(encoding='utf-8') == 'generate-key':
                     self.diffieHellman()
                     self.connection.close()
@@ -34,15 +34,33 @@ class Server:
                 if data.decode(encoding='utf-8') == 'message':
                     self.connection.send('...'.encode())
                     message = self.connection.recv(5000)
-                    print(len(message))
-                    print(message[:7].decode('utf8'))
-                    msg = []
-                    for i in range(8, len(message[8:]), 4):
-                        msg.append(int.from_bytes(message[i:i+3], byteorder='big'))
-                        # print(int.from_bytes(message[i:i+3], byteorder='big'))
-                    rsa = RSA()
-                    a = rsa.decrypt(msg, 1633, 2231)
+                    # print(len(message))
+                    # print(message[:7].decode('utf8'))
+                    a = message.decode('utf-8')
                     print(a)
+                    # exit()
+                    b = a.split("_")
+                    # print(b)
+                    new_arr = []
+                    for i in b:
+                        new_arr.append(int(i))
+
+                    # print("Mensagem encriptada:", )
+                    # print("Mensagem encriptada:",''.join(new_arr))
+                    print("------------------------------------")
+                    # print(list(map(int, new_arr)))
+                    # exit()
+                    # msg = []
+                    # for i in message:
+                    #     msg.append(i)
+                    #     # print(int.from_bytes(message[i:i+3], byteorder='big'))
+                    # print(message.decode())
+
+                    # exit()
+                    rsa = RSA()
+                    c = rsa.decrypt(list(map(int, new_arr)), 1633, 2231)
+                    print("Mensagem desencriptada:")
+                    print(c)
                     # print(int.from_bytes(message[8:], byteorder='big', ))
                     break
 
